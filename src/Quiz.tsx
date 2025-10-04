@@ -13,7 +13,7 @@ const QuizNumber = ({ score }: { score: number }) => {
 const CircleNumber = ({ number, currentQuestion }: { number: number; currentQuestion: number }) => {
   return (
     <div
-      className={`w-10 h-10 rounded-full flex justify-center items-center ${
+      className={`xl:w-10 xl:h-10 w-6 h-6 rounded-full flex justify-center items-center ${
         number <= currentQuestion + 1 ? "bg-linear-to-l from-g2 to-g1 text-white" : "bg-[#343964] text-white"
       }`}
     >
@@ -128,13 +128,13 @@ const Quiz = () => {
       <div className={`mb-10 ${currentQuestion < 10 ? "hidden" : ""}`}>
         <QuizResult score={score} onPlayAgain={handlePlayAgain} />
       </div>
-      <div className={`max-w-[800px] mx-auto ${currentQuestion < 10 ? "" : "hidden"}`}>
+      <div className={`xl:max-w-[800px] mx-auto ${currentQuestion < 10 ? "" : "hidden"}`}>
         <div className="flex w-full h-auto justify-center items-center mb-10">
           <h4 className="font-vietnam-pro font-bold !text-2xl text-white">Country Quiz</h4>
           <QuizNumber score={score} />
         </div>
         <div className="bg-[#393F6E] rounded-2xl shadow-2xl">
-          <div className="max-w-[70%] mx-auto">
+          <div className="xl:max-w-[70%] mx-auto">
             <div className="flex justify-between p-4">
               {randomCountries?.map((country, index) => (
                 <CircleNumber key={country?.name?.common} number={index + 1} currentQuestion={currentQuestion} />
@@ -149,7 +149,7 @@ const Quiz = () => {
                     </h5>
                     <img src={quizData[currentQuestion]?.question} alt="Country Flag" className="w-48 h-32 mx-auto" />
                   </div>
-                  <div className="grid grid-cols-2 gap-4 gap-x-8">
+                  <div className="grid xl:grid-cols-2 grid-cols-1 gap-4 gap-x-8">
                     {quizData[currentQuestion]?.options.map((option) => {
                       const isCorrectAnswer = option === quizData[currentQuestion]?.answer;
                       const isSelected = option === selectedOption;
