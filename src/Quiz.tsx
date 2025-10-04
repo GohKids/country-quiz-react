@@ -14,7 +14,7 @@ const CircleNumber = ({ number, currentQuestion }: { number: number; currentQues
   return (
     <div
       className={`w-10 h-10 rounded-full flex justify-center items-center ${
-        number <= currentQuestion ? "bg-linear-to-l from-g2 to-g1 text-white" : "bg-[#343964] text-white"
+        number <= currentQuestion + 1 ? "bg-linear-to-l from-g2 to-g1 text-white" : "bg-[#343964] text-white"
       }`}
     >
       <span className="font-vietnam-pro font-bold text-sm">{number}</span>
@@ -45,7 +45,7 @@ const getRandomItemsProper = <T,>(array: T[], count: number): T[] => {
 };
 
 const Quiz = () => {
-  const [currentQuestion, setCurrentQuestion] = useState(1);
+  const [currentQuestion, setCurrentQuestion] = useState(0);
   const [randomCountries, setRandomCountries] = useState<any[] | null>(null);
   const [quizData, setQuizData] = useState<{ question: string; options: string[]; answer: string }[] | null>(null);
   const [score, setScore] = useState(0);
@@ -54,7 +54,7 @@ const Quiz = () => {
   const [showAnswer, setShowAnswer] = useState(false);
 
   const handleAnswerClick = (option: string) => {
-    const isCorrect = option === quizData![currentQuestion - 1].answer;
+    const isCorrect = option === quizData![currentQuestion].answer;
 
     setSelectedOption(option);
     setShowAnswer(true);
@@ -62,7 +62,7 @@ const Quiz = () => {
     // Update answers status
     setAnswersStatus((prev) => {
       const newStatus = [...prev];
-      newStatus[currentQuestion - 1] = isCorrect;
+      newStatus[currentQuestion] = isCorrect;
       return newStatus;
     });
 
@@ -82,7 +82,7 @@ const Quiz = () => {
   };
 
   const handlePlayAgain = () => {
-    setCurrentQuestion(1);
+    setCurrentQuestion(0);
     setScore(0);
     setAnswersStatus(Array(10).fill(null));
   };
@@ -128,9 +128,9 @@ const Quiz = () => {
       <div className={`mb-10 ${currentQuestion < 10 ? "hidden" : ""}`}>
         <QuizResult score={score} onPlayAgain={handlePlayAgain} />
       </div>
-      <div className={`max-w-[800px] mx-auto ${currentQuestion < 11 ? "" : "hidden"}`}>
+      <div className={`max-w-[800px] mx-auto ${currentQuestion < 10 ? "" : "hidden"}`}>
         <div className="flex w-full h-auto justify-center items-center mb-10">
-          <h4 className="font-vietnam-pro font-bold !text-2xl text-white">Country Quiz</h4>
+          <h4 className="font-vietnam-pro font-bold !text-2xl text-white">Country Quiz {currentQuestion + 1} / 10</h4>
           <QuizNumber score={score} />
         </div>
         <div className="bg-[#393F6E] rounded-2xl shadow-2xl">
@@ -147,15 +147,11 @@ const Quiz = () => {
                     <h5 className="font-vietnam-pro font-bold !text-xl text-white mb-2">
                       Which country does this flag belong to?
                     </h5>
-                    <img
-                      src={quizData[currentQuestion - 1].question}
-                      alt="Country Flag"
-                      className="w-48 h-32 mx-auto"
-                    />
+                    <img src={quizData[currentQuestion]?.question} alt="Country Flag" className="w-48 h-32 mx-auto" />
                   </div>
                   <div className="grid grid-cols-2 gap-4 gap-x-8">
-                    {quizData[currentQuestion - 1].options.map((option) => {
-                      const isCorrectAnswer = option === quizData[currentQuestion - 1].answer;
+                    {quizData[currentQuestion]?.options.map((option) => {
+                      const isCorrectAnswer = option === quizData[currentQuestion]?.answer;
                       const isSelected = option === selectedOption;
 
                       let buttonClass =
