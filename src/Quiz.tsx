@@ -128,7 +128,7 @@ const Quiz = () => {
       <div className={`mb-10 ${currentQuestion < 10 ? "hidden" : ""}`}>
         <QuizResult score={score} onPlayAgain={handlePlayAgain} />
       </div>
-      <div className={`max-w-[800px] mx-auto ${currentQuestion < 10 ? "" : "hidden"}`}>
+      <div className={`max-w-[800px] mx-auto ${currentQuestion <= 10 ? "" : "hidden"}`}>
         <div className="flex w-full h-auto justify-center items-center mb-10">
           <h4 className="font-vietnam-pro font-bold !text-2xl text-white">Country Quiz</h4>
           <QuizNumber score={score} />
