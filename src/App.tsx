@@ -15,10 +15,11 @@ function App() {
 
   return (
     <>
-      <BrowserRouter>
+      <BrowserRouter basename="/country-quiz-react">
         <Routes>
           <Route path="/user/:userId" element={<UserProfile />} />
           <Route path="/quiz" element={<Quiz />} />
+          <Route path="/" element={<Quiz />} />
         </Routes>
       </BrowserRouter>
       {/* <div>
