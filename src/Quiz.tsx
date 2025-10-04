@@ -92,7 +92,7 @@ const Quiz = () => {
       const response = await fetch("https://restcountries.com/v3.1/all?fields=name,flags");
       const data = await response.json();
       const randomCountries = getRandomItemsProper(data, 10);
-      console.log(randomCountries);
+      // console.log(randomCountries);
       setRandomCountries(randomCountries);
     };
     fetchData();
@@ -130,7 +130,7 @@ const Quiz = () => {
       </div>
       <div className={`max-w-[800px] mx-auto ${currentQuestion < 10 ? "" : "hidden"}`}>
         <div className="flex w-full h-auto justify-center items-center mb-10">
-          <h4 className="font-vietnam-pro font-bold !text-2xl text-white">Country Quiz {currentQuestion + 1} / 10</h4>
+          <h4 className="font-vietnam-pro font-bold !text-2xl text-white">Country Quiz</h4>
           <QuizNumber score={score} />
         </div>
         <div className="bg-[#393F6E] rounded-2xl shadow-2xl">
