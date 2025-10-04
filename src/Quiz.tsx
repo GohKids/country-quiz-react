@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Trophy } from "lucide-react";
 
 const QuizNumber = ({ score }: { score: number }) => {
@@ -52,12 +52,15 @@ const Quiz = () => {
   const [answersStatus, setAnswersStatus] = useState<(boolean | null)[]>(Array(10).fill(null));
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [showAnswer, setShowAnswer] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(3);
+  const [isTimerActive, setIsTimerActive] = useState(false);
 
   const handleAnswerClick = (option: string) => {
     const isCorrect = option === quizData![currentQuestion].answer;
 
     setSelectedOption(option);
     setShowAnswer(true);
+    setIsTimerActive(false); // หยุดเวลา
 
     // Update answers status
     setAnswersStatus((prev) => {
@@ -75,16 +78,44 @@ const Quiz = () => {
     setTimeout(() => {
       if (currentQuestion < 10) {
         setCurrentQuestion(currentQuestion + 1);
+        setTimeLeft(3); // รีเซ็ตเวลา
+        setIsTimerActive(true); // เริ่มเวลาใหม่
       }
       setSelectedOption(null);
       setShowAnswer(false);
     }, 2000);
   };
 
+  const handleTimeUp = useCallback(() => {
+    if (!showAnswer) {
+      setShowAnswer(true);
+      setIsTimerActive(false);
+
+      // Mark as incorrect when time runs out
+      setAnswersStatus((prev) => {
+        const newStatus = [...prev];
+        newStatus[currentQuestion] = false;
+        return newStatus;
+      });
+
+      setTimeout(() => {
+        if (currentQuestion < 10) {
+          setCurrentQuestion(currentQuestion + 1);
+          setTimeLeft(3);
+          setIsTimerActive(true);
+        }
+        setSelectedOption(null);
+        setShowAnswer(false);
+      }, 2000);
+    }
+  }, [showAnswer, currentQuestion]);
+
   const handlePlayAgain = () => {
     setCurrentQuestion(0);
     setScore(0);
     setAnswersStatus(Array(10).fill(null));
+    setTimeLeft(3);
+    setIsTimerActive(true);
   };
 
   useEffect(() => {
@@ -97,6 +128,32 @@ const Quiz = () => {
     };
     fetchData();
   }, []);
+
+  // Timer effect
+  useEffect(() => {
+    let interval: number;
+
+    if (isTimerActive && timeLeft > 0) {
+      interval = setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            handleTimeUp();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+
+    return () => clearInterval(interval);
+  }, [isTimerActive, timeLeft, currentQuestion, showAnswer, handleTimeUp]);
+
+  // Start timer when quiz data is ready
+  useEffect(() => {
+    if (quizData && currentQuestion === 0) {
+      setIsTimerActive(true);
+    }
+  }, [quizData, currentQuestion]);
 
   useEffect(() => {
     if (randomCountries) {
@@ -143,6 +200,23 @@ const Quiz = () => {
             <div>
               {quizData && (
                 <div className="p-4">
+                  {/* Timer Progress Bar */}
+                  <div className="mb-6">
+                    <div className="w-full bg-gray-600 rounded-full h-3 mb-2">
+                      <div
+                        className={`h-3 rounded-full transition-all duration-300 ${
+                          timeLeft <= 1 ? "bg-red-500" : "bg-gradient-to-r from-green-400 to-blue-500"
+                        }`}
+                        style={{ width: `${(timeLeft / 3) * 100}%` }}
+                      ></div>
+                    </div>
+                    <div className="text-center">
+                      <span className={`text-sm font-medium ${timeLeft <= 1 ? "text-red-400" : "text-gray-300"}`}>
+                        {timeLeft} seconds remaining
+                      </span>
+                    </div>
+                  </div>
+
                   <div className="mb-6">
                     <h5 className="font-vietnam-pro font-bold !text-xl text-white mb-2">
                       Which country does this flag belong to?
@@ -168,7 +242,7 @@ const Quiz = () => {
                           key={option}
                           className={buttonClass}
                           onClick={() => !showAnswer && handleAnswerClick(option)}
-                          disabled={showAnswer}
+                          disabled={showAnswer || timeLeft === 0}
                         >
                           <span className="flex items-center justify-center">
                             {option}
